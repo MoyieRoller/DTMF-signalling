@@ -1,0 +1,1 @@
+# basic storage of the frequencies assigned to each digit
