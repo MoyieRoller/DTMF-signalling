@@ -36,7 +36,7 @@ def buf_to_byte(audio_buf):
 
 if __name__ == '__main__':
 
-    telephone_number = ['0', '7', '2', '3', '3', '6', '4', '6', '6']
+    telephone_number = ['0', '7', '2', '1', '6', '6', '2', '9', '2', '1', '2']
     generate_frequencies(telephone_number)
 
     audio_buffer = []
