@@ -2,19 +2,10 @@ import math, wave, struct
 import numpy as np
 import frequencies as fr
 
-frequencies_low = []
-frequencies_high = []
-
 samplerate = 44100
 sample_duration = int(samplerate * 0.1) # 100ms of tone duration
 
-def generate_frequencies(tel_num):
-    for digit in tel_num:
-        digit_frequencies = fr.frequencies[digit]
-        frequencies_low.append(digit_frequencies[0])
-        frequencies_high.append(digit_frequencies[1])
-
-def make_audio_buffer(sr, freq_l, freq_h, dur):
+def make_single_tone_buffer(sr, freq_l, freq_h, dur) -> list:
     buffer = []
     for i in range(dur):
         tones = []
@@ -26,7 +17,25 @@ def make_audio_buffer(sr, freq_l, freq_h, dur):
         buffer.append(tones_sum)
     return buffer
 
-def buf_to_byte(audio_buf):
+def generate_audio_sequence(tel_num) -> list:
+    audio_buffer = []
+    frequencies_low = []
+    frequencies_high = []
+
+    for digit in tel_num:
+        digit_frequencies = fr.frequencies[digit]
+        frequencies_low.append(digit_frequencies[0])
+        frequencies_high.append(digit_frequencies[1])
+    
+    for i in range(len(frequencies_low)):
+        local_audio_buffer = make_single_tone_buffer(samplerate, frequencies_low[i], frequencies_high[i], sample_duration)
+        for j in range(len(local_audio_buffer)):
+            local_audio_buffer[j] *= 1. - j / len(local_audio_buffer)
+        for k in local_audio_buffer:
+            audio_buffer.append(k)
+    return audio_buffer
+
+def buffer_to_bytearray(audio_buf) -> bytearray:
     bin_buf = bytearray()
     for sample in audio_buf:
         local_sample = sample * ((2**16 - 1) / (2**16))
@@ -37,21 +46,13 @@ def buf_to_byte(audio_buf):
 if __name__ == '__main__':
 
     telephone_number = ['0', '7', '2', '1', '6', '6', '2', '9', '2', '1', '2']
-    generate_frequencies(telephone_number)
 
-    audio_buffer = []
-    for i in range(len(frequencies_low)):
-        local_audio_buffer = make_audio_buffer(samplerate, frequencies_low[i], frequencies_high[i], sample_duration)
-        for j in range(len(local_audio_buffer)):
-            local_audio_buffer[j] *= 1. - j / len(local_audio_buffer)
-        for k in local_audio_buffer:
-            audio_buffer.append(k)
+    audio_buffer = generate_audio_sequence(telephone_number)
+    bin_buf = buffer_to_bytearray(audio_buffer)
 
-    bin_buf = buf_to_byte(audio_buffer)
-
-    wav = wave.open('test.wav', 'w')
-    wav.setnchannels(1)
-    wav.setsampwidth(2)
-    wav.setframerate(samplerate)
-    wav.writeframes(bin_buf)
-    wav.close()
+    out = wave.open('test.wav', 'w')
+    out.setnchannels(1)
+    out.setsampwidth(2)
+    out.setframerate(samplerate)
+    out.writeframes(bin_buf)
+    out.close()
