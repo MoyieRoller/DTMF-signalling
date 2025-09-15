@@ -64,6 +64,8 @@ else:
     else:
         input_path = user_input[1]
 
+print(f'Telephone number: {int(user_input[0])}')
+
 if not input_path.endswith('/'):
     input_path += '/'
 
