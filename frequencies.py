@@ -1,4 +1,5 @@
-# basic storage of the frequencies assigned to each digit
+"""Basic storage of the DTMF-frequencies assigned to each digit"""
+
 frequencies = {
     '1': [697, 1209],
     '2': [697, 1336],

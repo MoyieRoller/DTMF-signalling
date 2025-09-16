@@ -1,3 +1,5 @@
+""""""
+
 import wave, sys, os
 import tone_generation as tg
 
@@ -7,6 +9,7 @@ input_path = ''
 if len(sys.argv) == 1:
     while(True):
         user_input = input('Please insert a telephone number and a designated path the audiofile is saved to: ')
+
         if user_input == 'exit':
             print('Exiting...')
             sys.exit(0)

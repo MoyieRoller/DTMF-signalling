@@ -1,11 +1,24 @@
+"""Helper functions to generate an audio buffer from given frequencies"""
+
 import math, wave, struct
 import numpy as np
 import frequencies as fr
 
-samplerate = 44100
-sample_duration = int(samplerate * 0.1) # 100ms of tone duration
+samplerate = 44100 # in Hz
+sample_duration = int(samplerate * 0.1) # 0.1 = 100ms of tone duration
 
-def make_single_tone_buffer(sr, freq_l, freq_h, dur) -> list:
+def make_single_tone_buffer(sr: int, freq_l: int, freq_h:int , dur: int) -> list:
+    """Function that writes an audio buffer for two given frequencies that are mixed together.
+
+    Parameters:
+    sr (int): Defined samplerate.
+    freq_l(int): Lower frequency of the DTMF-signal.
+    freq_r(int): High frequency of the DTMF-signal.
+    dur(int): Duration of the signal.
+
+    Return:
+    list: Audio buffer of a single DTMD-tone 
+    """
     buffer = []
     for i in range(dur):
         tones = []
@@ -17,7 +30,7 @@ def make_single_tone_buffer(sr, freq_l, freq_h, dur) -> list:
         buffer.append(tones_sum)
     return buffer
 
-def generate_audio_sequence(tel_num) -> list:
+def generate_audio_sequence(tel_num: list) -> list:
     audio_buffer = []
     frequencies_low = []
     frequencies_high = []
@@ -35,7 +48,7 @@ def generate_audio_sequence(tel_num) -> list:
             audio_buffer.append(k)
     return audio_buffer
 
-def buffer_to_bytearray(audio_buf) -> bytearray:
+def buffer_to_bytearray(audio_buf: list) -> bytearray:
     bin_buf = bytearray()
     for sample in audio_buf:
         local_sample = sample * ((2**16 - 1) / (2**16))
