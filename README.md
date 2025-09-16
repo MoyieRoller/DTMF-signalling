@@ -13,4 +13,6 @@ If no arguments where given the program asks you to enter them after starting it
 
 `<telephone_number> /path/to/file`
 
+I recommend using the path `./` for testing purposes.
+
 If everything is correct, the program returns the telephone number to the commandline and writes the file to the given path. If one of the inputs is wrong, an error message is displayed.

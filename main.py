@@ -47,7 +47,6 @@ if len(sys.argv) == 1:
             break
 else:
     user_input = list(sys.argv[1:])
-    print(user_input)
     try:
         val = int(user_input[0])
     except ValueError:
