@@ -10,14 +10,14 @@ sample_duration = int(samplerate * 0.1) # 0.1 = 100ms of tone duration
 def make_single_tone_buffer(sr: int, freq_l: int, freq_h:int , dur: int) -> list:
     """Function that writes an audio buffer for two given frequencies that are mixed together.
 
-    Parameters:
-    sr (int): Defined samplerate.
+    Params:
+    sr(int): Defined samplerate.
     freq_l(int): Lower frequency of the DTMF-signal.
     freq_r(int): High frequency of the DTMF-signal.
-    dur(int): Duration of the signal.
+    dur(int): Duration of the signal in samples.
 
     Return:
-    list: Audio buffer of a single DTMD-tone 
+    list: Audio buffer of a single DTMF-tone.
     """
     buffer = []
     for i in range(dur):
@@ -31,6 +31,14 @@ def make_single_tone_buffer(sr: int, freq_l: int, freq_h:int , dur: int) -> list
     return buffer
 
 def generate_audio_sequence(tel_num: list) -> list:
+    """Generate the audio buffer for the whole sequence of given digits.
+
+    Params:
+    tel_num(list): Digits of the telephone number as single strings in a list.
+
+    Returns:
+    list: Audio buffer of the whole DTMF-sequence.
+    """
     audio_buffer = []
     frequencies_low = []
     frequencies_high = []
@@ -43,15 +51,23 @@ def generate_audio_sequence(tel_num: list) -> list:
     for i in range(len(frequencies_low)):
         local_audio_buffer = make_single_tone_buffer(samplerate, frequencies_low[i], frequencies_high[i], sample_duration)
         for j in range(len(local_audio_buffer)):
-            local_audio_buffer[j] *= 1. - j / len(local_audio_buffer)
+            local_audio_buffer[j] *= 1. - j / len(local_audio_buffer) # add an envelope to each audio buffer element
         for k in local_audio_buffer:
             audio_buffer.append(k)
     return audio_buffer
 
 def buffer_to_bytearray(audio_buf: list) -> bytearray:
+    """Write audio buffer to 16-bit integers, so wave function can write it.
+
+    Params:
+    audio_buf(list): DTMF-sequence written in a buffer list.
+
+    Returns:
+    bytearray: DTMF-audiobuffer as a bytearray.
+    """
     bin_buf = bytearray()
     for sample in audio_buf:
-        local_sample = sample * ((2**16 - 1) / (2**16))
+        local_sample = sample * ((2**16 - 1) / (2**16)) # scale amplitude, so that no overflow for 16-bit-singed-integers happens
         bin_buf = bin_buf + struct.pack('h', round(local_sample * 2 **16/2))
     return bin_buf
 
